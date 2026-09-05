@@ -1,0 +1,30 @@
+{
+  "name": "drawhub",
+  "private": true,
+  "version": "0.3.5",
+  "type": "module",
+  "description": "DrawHub - 聚合 draw.io / Excalidraw / 思维导图的本地绘图工具",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "tauri": "tauri"
+  },
+  "dependencies": {
+    "@excalidraw/excalidraw": "^0.18.1",
+    "lucide-react": "^1.39.0",
+    "mind-elixir": "^5.15.1",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8",
+    "simple-mind-map": "^0.13.1",
+    "zustand": "^5.0.15"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "^2.11.4",
+    "@types/react": "^19.2.18",
+    "@types/react-dom": "^19.2.5",
+    "@vitejs/plugin-react": "^6.1.1",
+    "typescript": "~5.9.3",
+    "vite": "^8.2.2"
+  }
+}

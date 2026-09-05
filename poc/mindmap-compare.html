@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-page-node-id="o2nGq4zqD0OuEutHi5ThtJ">
+<head data-page-node-id="2DQWwkfjoqQv5KkKNtZRSp">
+  <meta charset="UTF-8" data-page-node-id="nSPSTAsZ4EG8ByN2v27z8A" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" data-page-node-id="w6dPi5ayCVHdntGJrZakBn" />
+  <title>思维导图引擎对比 POC — simple-mind-map vs mind-elixir</title>
+  <style>
+    /* 复用 DrawHub 的全局字体：Excalidraw 官网同款 Assistant + 系统字体回退 */
+    @font-face {
+      font-family: 'Assistant';
+      font-style: normal;
+      font-weight: 400 800;
+      font-display: swap;
+      src: local('Assistant'),
+        url('https://fonts.gstatic.com/s/assistant/v19/2sDcZGJYnIjSi6H75xkzaGW5Kb8VZA.woff2') format('woff2');
+    }
+    :root {
+      --font: 'Assistant', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI',
+        'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: var(--font);
+      background: linear-gradient(135deg, #eef0f5 0%, #e8ecf5 100%);
+      color: #1d2129;
+    }
+    header {
+      padding: 20px 28px 14px;
+      display: flex;
+      align-items: baseline;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    header h1 { font-size: 20px; margin: 0; font-weight: 700; }
+    header .sub { color: #5f6773; font-size: 13px; }
+    .legend {
+      display: flex;
+      gap: 20px;
+      margin-left: auto;
+      font-size: 12px;
+      color: #5f6773;
+    }
+    .legend b { color: #1d2129; }
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      padding: 0 28px 28px;
+    }
+    .card {
+      background: rgba(255,255,255,0.62);
+      backdrop-filter: saturate(180%) blur(24px);
+      border: 1px solid rgba(255,255,255,0.75);
+      border-radius: 16px;
+      box-shadow: 0 4px 16px rgba(16,24,40,0.08);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    .card-head {
+      padding: 12px 16px;
+      border-bottom: 1px solid rgba(16,24,40,0.07);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .card-head .name { font-weight: 700; font-size: 15px; }
+    .card-head .ver { font-size: 11px; color: #949ba7; font-weight: 400; }
+    .card-head .badge {
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 20px;
+      font-weight: 600;
+    }
+    .badge.good { background: rgba(48,164,108,0.14); color: #2a8c5b; }
+    .badge.warn { background: rgba(245,165,36,0.16); color: #b77a14; }
+    .canvas-wrap {
+      position: relative;
+      flex: 1;
+      min-height: 560px;
+      overflow: hidden;
+    }
+    .canvas-wrap .hint {
+      position: absolute;
+      top: 12px;
+      right: 14px;
+      font-size: 11px;
+      color: #949ba7;
+      background: rgba(255,255,255,0.7);
+      padding: 3px 9px;
+      border-radius: 20px;
+      z-index: 5;
+      pointer-events: none;
+    }
+    #smm, #me { width: 100%; height: 100%; }
+    /* simple-mind-map 容器 */
+    #smm { position: absolute; inset: 0; }
+    /* mind-elixir 容器 */
+    #me { position: absolute; inset: 0; }
+    .card-foot {
+      padding: 10px 16px;
+      border-top: 1px solid rgba(16,24,40,0.07);
+      font-size: 12px;
+      color: #5f6773;
+      display: flex;
+      gap: 18px;
+      flex-wrap: wrap;
+    }
+    .card-foot .metric b { color: #1d2129; }
+    .note {
+      padding: 0 28px 8px;
+      font-size: 12px;
+      color: #949ba7;
+    }
+    @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body data-page-node-id="2CbTDEF54UBRIlLs5HIexb">
+  <header data-page-node-id="kl5IM8b6X1aNY7VwbGJSgc">
+    <h1 data-page-node-id="yEpTceCdRQOoJYf8ePc9CB">思维导图引擎对比 POC</h1>
+    <span class="sub" data-page-node-id="98keKFO1jC7kr6LC61azPS">simple-mind-map 0.13 vs mind-elixir 5.15.1 — 同样数据 · 同样全局字体 · 左右并排</span>
+    <div class="legend" data-page-node-id="FgmMdyQkhq8ggwLcaC2eXB">
+      <span data-page-node-id="EojXZWy7UY1n7CZQVW75ys"><b data-page-node-id="Mda5gdrqnA43kouXno8I43">提示：</b>双击节点编辑 · 选中后 Tab 加子节点 · 右键菜单</span>
+    </div>
+  </header>
+
+  <div class="grid" data-page-node-id="BebCS5jSGvKhtkNdjfunwk">
+    <!-- simple-mind-map -->
+    <div class="card" data-page-node-id="2sLT6CsyIYAjPKiut6TGb4">
+      <div class="card-head" data-page-node-id="OpwW3AQKbP7kPqwVatOWi2">
+        <span class="name" data-page-node-id="iJsOTEzd5n3X1qnPAfHvYu">simple-mind-map</span>
+        <span class="ver" data-page-node-id="D8CRlD8J50ZMcrtOMN3LYW">v0.13.x（当前 DrawHub 使用）</span>
+        <span class="badge warn" data-page-node-id="uWUNuATIhEhpkM3rJk6rRt">体积大 · 低维护</span>
+      </div>
+      <div class="canvas-wrap" data-page-node-id="BAHgfJ63hd5rbRwdfM041A">
+        <div id="smm" data-page-node-id="jwyW7XRPLTlDGxkfTkMM2H"></div>
+        <div class="hint" data-page-node-id="9rwgk7cvSsVvgSvrWWGhLB">字体默认写死「微软雅黑」</div>
+      </div>
+      <div class="card-foot" data-page-node-id="WUJrt0ERYYWbqUnQQ9bYdb">
+        <span class="metric" data-page-node-id="XI3v1cP2VgzOPIh20VS0Nd">包体积 <b id="smm-size" data-page-node-id="om8LmvtGTKYCxJGaBcQdtm">…</b></span>
+        <span class="metric" data-page-node-id="N5PQSjFULNzmsWdIHM2Z0w">字体渲染 <b id="smm-font" data-page-node-id="PknFi9hLCqll4NuH1ID87D">…</b></span>
+      </div>
+    </div>
+
+    <!-- mind-elixir -->
+    <div class="card" data-page-node-id="R6TAhfDgeAqe0uVMVQWgq4">
+      <div class="card-head" data-page-node-id="a7YRaGc57JDd3UC6o5hfdx">
+        <span class="name" data-page-node-id="oGWc5F3nIK4HfpCZ4u8CoO">mind-elixir-core</span>
+        <span class="ver" data-page-node-id="8aCwLiotXnZ7v1U07Nr1Mx">v5.15.1</span>
+        <span class="badge good" data-page-node-id="JrhtgWq2tWFA544iJGhsBd">轻量 · 活跃维护</span>
+      </div>
+      <div class="canvas-wrap" data-page-node-id="vXiUqHMqaV4E0XIgK9E0F1">
+        <div id="me" data-page-node-id="dnn2Sw6RnzEhvOGAKZfOw0"></div>
+        <div class="hint" data-page-node-id="8832ueXNPnAk3I2AWzMiwF">字体走系统栈（PingFang SC 等）</div>
+      </div>
+      <div class="card-foot" data-page-node-id="D4xOP40QfHvNe6nitqZLfM">
+        <span class="metric" data-page-node-id="TOUo0x7czhyrASxm7ntgxN">包体积 <b id="me-size" data-page-node-id="NM2foH2ABG4Y97JCBLQEvW">…</b></span>
+        <span class="metric" data-page-node-id="ua4Z5JBlIvBOJUwDKJsDjz">字体渲染 <b id="me-font" data-page-node-id="MSUMggGw4ByuwhJ9yseQZn">…</b></span>
+      </div>
+    </div>
+  </div>
+
+  <div class="note" data-page-node-id="OhrSJJUVE9NumilfBF7YNb">
+    加载方式：两者均通过本地 vendor 副本（UMD/IIFE 构建）直接引入（不经打包器、不依赖 node_modules 与外部网络），并显式套用 DrawHub 全局字体栈以公平对比字体渲染。
+  </div>
+
+  <div class="grid" style="grid-template-columns: 1fr 1fr; padding-top: 0;" data-page-node-id="RIb2hYFuMydkg0FOCkUkN0">
+    <div class="card-foot" style="border: 1px solid rgba(16,24,40,0.07); border-radius: 16px; background: rgba(255,255,255,0.62);" data-page-node-id="DgsLCGQZqd0vedWE2SSXeI">
+      <div style="font-weight:700; margin-bottom:6px;" data-page-node-id="2aX10Fd0FaHyQVcRJsJEBU">simple-mind-map 实测观察</div>
+      <div style="line-height:1.7;" data-page-node-id="8a2oJv4EBE3fYxh8JpVzFY">
+        • 节点文字用 SVG <code data-page-node-id="LlJXrRywibVnx4krJiOlkh">&lt;foreignObject&gt;</code> + <code data-page-node-id="D8heM2WrdoYCOjW5KKr8Mc">&lt;div&gt;</code>，由库内部 CSS 固定宽度（500px 上限）<br data-page-node-id="zB11VB7xlYCKbcxvyVHNNB">
+        • 容器尺寸变小后 <code data-page-node-id="pcnMKGs72YDarwCLElAQVe">view.fit()</code> 会等比缩放整图 → 文字被同步缩小到 <b data-page-node-id="4R3DJy1wWY9oGOHZqCTPnI">视觉几乎不可读</b><br data-page-node-id="9jB0EMBQOBR9ONty8RNH5e">
+        • 主题字体写死「微软雅黑」需手动在 themeConfig 全量覆盖（已在本 POC 处理）<br data-page-node-id="fuIUmEGLrdpW4QPr15RfCU">
+        • 体积大（UMD <b data-page-node-id="UQE9HX7C1nTAHrlS2LG7Tn">6.7 MB</b>）；npm 体积约 1.4 MB（含富文本/数学公式/导出等插件），稳定但作者已进入低维护<br data-page-node-id="VrxOSuadrVY4zQtkgjIH5Q">
+        • 内置结构最多：逻辑结构 / 思维导图 / 时间轴 / 鱼骨图 / 组织结构 等 7+ 种
+      </div>
+    </div>
+    <div class="card-foot" style="border: 1px solid rgba(16,24,40,0.07); border-radius: 16px; background: rgba(255,255,255,0.62);" data-page-node-id="FPgJkIQpCgIDDufkVdOjuj">
+      <div style="font-weight:700; margin-bottom:6px;" data-page-node-id="RYlhQOxvF5ZA96C8oeZB8L">mind-elixir-core 实测观察</div>
+      <div style="line-height:1.7;" data-page-node-id="uiZdHpNSungQ6d2cs7mKPM">
+        • 节点文字用自定义 web components（<code data-page-node-id="TZlenGITw7VfDAPuCdz5Fo">me-tpc</code>），CSS 直接走全局字体栈，<b data-page-node-id="Fw1WvyGENp3p8tdZup017O">节点框自适应文字宽度</b><br data-page-node-id="KR1hpc2wJoZ3HFvO0vIflb">
+        • 提供 <code data-page-node-id="NBCCk9unsXu5tR2eWpwO6h">scale()</code> + <code data-page-node-id="BWkwaOoleNlIFpbIpzDU27">toCenter()</code> 单独缩放画布，不会把文字一起缩小<br data-page-node-id="57pEGggDxyummCmwQUGJML">
+        • 字体栈是「-apple-system, BlinkMacSystemFont, Helvetica Neue, PingFang SC...」，不含 Assistant（可在节点 <code data-page-node-id="WOWcEiCoiJG2nR9Y6ME37T">style.fontFamily</code> 单独覆盖）<br data-page-node-id="AtobW34lijPXORzV1wztLB">
+        • 体积极小（IIFE <b data-page-node-id="PX6w1vRPfX35DFLUhFVcFV">91 KB</b>，约 15 KB gzip），作者活跃维护<br data-page-node-id="n4AdQnGTHtgZLxHiH51MHz">
+        • 结构以左右展开为主，无现成的鱼骨图 / 时间轴（可基于插件扩展）
+      </div>
+    </div>
+  </div>
+
+  <div style="padding: 12px 28px 28px; font-size: 12px; color: #5f6773;" data-page-node-id="wxsyvKfxP56Dq57alEoX3A">
+    <b data-page-node-id="2NnAy41UEMNyWHDWNKB8AK">一句话总结</b>：用户反馈的「simple-mind-map 问题多、字体显示仍未修复」在本次 POC 中被同步复现（左边画布文字几乎不可读）；mind-elixir 在字体渲染和视觉清晰度上明显更优，是当前最理性的替代候选。
+  </div>
+
+  <!-- 样式：simple-mind-map 必须自带 CSS（含 SVG 节点基础样式），mind-elixir 也需要 -->
+  <!-- 全部改为 poc/vendor 本地副本，脱离对 node_modules 与外部服务的依赖 -->
+  <link rel="stylesheet" href="./vendor/simpleMindMap.esm.css" data-page-node-id="ABbAj7BDtdjqgUGeaShWfC" />
+  <link rel="stylesheet" href="./vendor/MindElixir.css" data-page-node-id="zFCMJlEEA0hpi6gxqmIlSh" />
+
+  <!-- 两个库的 UMD/IIFE 构建（本地 vendor 副本） -->
+  <script src="./vendor/simpleMindMap.umd.js"></script>
+  <script src="./vendor/MindElixir.iife.js"></script>
+
+  <script>
+    const GLOBAL_FONT =
+      "'Assistant', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif";
+
+    // 两组相同结构的测试数据（含中英文 + 长文字，专门用来暴露字体/换行问题）
+    const smmData = {
+      data: { text: '中心主题 Center' },
+      children: [
+        {
+          data: { text: '分支一 中文标题很长很长很长很长很长很长' },
+          children: [
+            { data: { text: '子节点 A-1' } },
+            { data: { text: '子节点 A-2 混排 English Text' } },
+          ],
+        },
+        {
+          data: { text: '分支二 Branch Two' },
+          children: [{ data: { text: '子节点 B-1' } }],
+        },
+      ],
+    };
+
+    const meData = {
+      nodeData: {
+        topic: '中心主题 Center',
+        id: 'root',
+        children: [
+          {
+            topic: '分支一 中文标题很长很长很长很长很长很长',
+            id: 'n1',
+            children: [
+              { topic: '子节点 A-1', id: 'n1a' },
+              { topic: '子节点 A-2 混排 English Text', id: 'n1b' },
+            ],
+          },
+          {
+            topic: '分支二 Branch Two',
+            id: 'n2',
+            children: [{ topic: '子节点 B-1', id: 'n2a' }],
+          },
+        ],
+      },
+    };
+
+    // ===== simple-mind-map =====
+    try {
+      const MindMapCtor = window.simpleMindMap.default;
+      const smm = new MindMapCtor({
+        el: document.getElementById('smm'),
+        data: smmData,
+        layout: 'logicalStructure',
+        theme: 'default',
+        themeConfig: {
+          root: { fontFamily: GLOBAL_FONT },
+          second: { fontFamily: GLOBAL_FONT },
+          node: { fontFamily: GLOBAL_FONT },
+          generalization: { fontFamily: GLOBAL_FONT },
+        },
+        enableFreeDrag: true,
+      });
+      // 不用 fit()（fit 在小容器里会等比缩小整图到文字几乎不可见——这正是用户反复反馈的根因）
+      // 关闭 fit 后交给 svg 自适应 + 主动 setScale
+      setTimeout(() => {
+        try {
+          smm.view && smm.view.setScale && smm.view.setScale(0.85);
+          smm.view && smm.view.setCenter && smm.view.setCenter();
+        } catch (_) {}
+      }, 50);
+      fetch('./vendor/simpleMindMap.umd.js')
+        .then((r) => r.blob())
+        .then((b) => {
+          document.getElementById('smm-size').textContent = (b.size / 1024).toFixed(0) + ' KB（umd）';
+        });
+      // 字体指标：smm 主题把 fontFamily 写到 SVG text 属性上，CSS 覆盖不到
+      // 这里再补一刀：直接对 svg 内所有 <text> 强制 font-family，再读 computed style 验证
+      setTimeout(() => {
+        const svg = document.querySelector('#smm svg');
+        if (svg) {
+          svg.querySelectorAll('text').forEach((t) => {
+            t.setAttribute('font-family', GLOBAL_FONT);
+          });
+        }
+        const text = document.querySelector('#smm svg text');
+        const fo = document.querySelector('#smm .smm-richtext-node-wrap');
+        const target = text || fo;
+        const fam = target ? getComputedStyle(target).fontFamily : '(未取到)';
+        document.getElementById('smm-font').textContent = fam;
+      }, 800);
+      window.__smm = smm;
+    } catch (e) {
+      document.getElementById('smm').innerHTML = '<p style="padding:20px;color:#e5484d">加载失败：' + e.message + '</p>';
+    }
+
+    // ===== mind-elixir =====
+    try {
+      const MindElixir = window.MindElixir.default;
+      const me = new MindElixir({
+        el: document.getElementById('me'),
+        direction: MindElixir.RIGHT,
+        editable: true,
+        toolBar: false,
+        contextMenu: true,
+        allowUndo: true,
+        // 初始缩放到合适大小，避免节点溢出
+        scaleSensitivity: 0.1,
+        scaleMin: 0.3,
+        scaleMax: 2,
+      });
+      me.init(meData);
+      // 居中显示 + 合适缩放
+      setTimeout(() => {
+        me.toCenter && me.toCenter();
+        me.scale(0.7);
+        me.toCenter && me.toCenter();
+      }, 100);
+      fetch('./vendor/MindElixir.iife.js')
+        .then((r) => r.blob())
+        .then((b) => {
+          document.getElementById('me-size').textContent = (b.size / 1024).toFixed(0) + ' KB（iife）';
+        });
+      setTimeout(() => {
+        const tpc = document.querySelector('#me me-tpc');
+        const fam = tpc ? getComputedStyle(tpc).fontFamily : '(未取到)';
+        document.getElementById('me-font').textContent = fam;
+      }, 800);
+      window.__me = me;
+    } catch (e) {
+      document.getElementById('me').innerHTML = '<p style="padding:20px;color:#e5484d">加载失败：' + e.message + '</p>';
+    }
+  </script>
+</body>
+</html>

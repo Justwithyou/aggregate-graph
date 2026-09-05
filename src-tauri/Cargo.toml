@@ -1,0 +1,18 @@
+[package]
+name = "drawhub"
+version = "0.1.0"
+description = "DrawHub - 聚合 draw.io / Excalidraw / 思维导图的本地绘图工具"
+authors = ["DrawHub"]
+edition = "2021"
+
+[lib]
+name = "drawhub_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = [] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
