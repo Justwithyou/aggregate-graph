@@ -314,6 +314,9 @@ drawhub/
 - [ ] 跨引擎互转（drawio XML ⇄ Excalidraw JSON ⇄ 思维导图 JSON）
 - [ ] AI 润色 / 一键美化（本地 LLM 优先）
 - [ ] 协同编辑（Yjs + WebSocket）
+- [ ] **架构与部署图**（[T-11](docs/未来功能升级.md#24-场景化模板集按画图类型集成)：draw.io 整合 AWS / Azure / GCP / Kubernetes / 网络拓扑模板集）
+- [ ] **数据与流程类图**（[T-12](docs/未来功能升级.md#24-场景化模板集按画图类型集成)：draw.io UML/BPMN 模板 + Mermaid 文本→图）
+- [ ] **项目管理与规划图**（[T-13](docs/未来功能升级.md#24-场景化模板集按画图类型集成)：draw.io Project / Gantt / Timeline 模板）
 
 **远期愿景（v1.0+）**
 
