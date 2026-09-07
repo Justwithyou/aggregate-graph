@@ -4,9 +4,12 @@
    =========================================================== */
 
 /* ===========================================================
-   全局字体：与 Excalidraw 官网 UI 对齐
-   Assistant —— Excalidraw 官方界面字体（Google Fonts 开源，OFL 协议）
-   画布/正文文字用默认字重；中文回退到 PingFang SC / Microsoft YaHei。
+   全局字体
+   界面默认使用 excalifont（Excalidraw 开源手写体，SIL OFL 协议），
+   中文等 excalifont 未覆盖的字符回退到「excalifont Fallback」（系统 CJK 字体）。
+   顶栏「字体」按钮可切回 system（Assistant + 系统 UI 字体），
+   通过 <html data-font="system"> 覆盖 --font 实现，无需重新加载。
+
    单个文件/引擎内部可通过覆盖 --font 或元素自身 font-family 单独设置。
    =========================================================== */
 @font-face {
@@ -19,9 +22,113 @@
       format('woff2');
 }
 
+/* excalifont —— 按 unicode-range 分片，浏览器只会下载命中的那一片 */
+@font-face {
+  font-family: 'excalifont';
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url('../assets/fonts/Excalifont/Excalifont-Regular-a88b72a24fb54c9f94e3b5fdaa7481c9.woff2')
+    format('woff2');
+  unicode-range: U+0020-007E, U+00A0-00A3, U+00A5-00A6, U+00A8-00AB, U+00AD-00B1, U+00B4,
+    U+00B6-00B8, U+00BA-00FF, U+0131, U+0152-0153, U+02BC, U+02C6, U+02DA, U+02DC, U+0304,
+    U+0308, U+2013-2014, U+2018-201A, U+201C-201E, U+2020, U+2022, U+2024-2026, U+2030,
+    U+2039-203A, U+20AC, U+2122, U+2212;
+}
+
+@font-face {
+  font-family: 'excalifont';
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url('../assets/fonts/Excalifont/Excalifont-Regular-be310b9bcd4f1a43f571c46df7809174.woff2')
+    format('woff2');
+  unicode-range: U+0100-0130, U+0132-0137, U+0139-0149, U+014C-0151, U+0154-017E, U+0192,
+    U+01FC-01FF, U+0218-021B, U+0237, U+1E80-1E85, U+1EF2-1EF3, U+2113;
+}
+
+@font-face {
+  font-family: 'excalifont';
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url('../assets/fonts/Excalifont/Excalifont-Regular-41b173a47b57366892116a575a43e2b6.woff2')
+    format('woff2');
+  unicode-range: U+037E, U+0384-038A, U+038C, U+038E-0393, U+0395-03A1, U+03A3-03A8, U+03AA-03CF,
+    U+03D7;
+}
+
+@font-face {
+  font-family: 'excalifont';
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url('../assets/fonts/Excalifont/Excalifont-Regular-b9dcf9d2e50a1eaf42fc664b50a3fd0d.woff2')
+    format('woff2');
+  unicode-range: U+0400-045F, U+0490-0491, U+2116;
+}
+
+@font-face {
+  font-family: 'excalifont';
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url('../assets/fonts/Excalifont/Excalifont-Regular-349fac6ca4700ffec595a7150a0d1e1d.woff2')
+    format('woff2');
+  unicode-range: U+0462-0463, U+0472-0475, U+04D8-04D9, U+04E2-04E3, U+04E6-04E9, U+04EE-04EF;
+}
+
+@font-face {
+  font-family: 'excalifont';
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url('../assets/fonts/Excalifont/Excalifont-Regular-3f2c5db56cc93c5a6873b1361d730c16.woff2')
+    format('woff2');
+  unicode-range: U+02C7, U+02D8-02D9, U+02DB, U+02DD, U+0302, U+0306-0307, U+030A-030C, U+0326-0328,
+    U+212E, U+2211, U+FB01-FB02;
+}
+
+@font-face {
+  font-family: 'excalifont';
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url('../assets/fonts/Excalifont/Excalifont-Regular-623ccf21b21ef6b3a0d87738f77eb071.woff2')
+    format('woff2');
+  unicode-range: U+0300-0301, U+0303;
+}
+
+/**
+ * excalifont Fallback —— 仅承接 excalifont 未覆盖的字符（主要是中文）。
+ * 用 local() 指向系统 CJK 字体，不下载任何资源；全部缺失时浏览器自动跳到栈的下一族。
+ */
+@font-face {
+  font-family: 'excalifont Fallback';
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: local('PingFang SC'), local('Hiragino Sans GB'), local('Microsoft YaHei'),
+    local('Noto Sans CJK SC'), local('Source Han Sans SC'), local('Segoe UI'),
+    local('Helvetica Neue'), local('Arial');
+}
+
 :root {
-  --font: 'Assistant', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC',
-    'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+  /* 手写体（默认）：拉丁字符走 excalifont，中文走系统 CJK */
+  --font: excalifont, 'excalifont Fallback', system-ui, -apple-system, BlinkMacSystemFont,
+    'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+  /* 备用：界面字体（Assistant + 系统 UI 字体） */
+  --font-system: 'Assistant', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI',
+    'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+  /* 中文无衬线（黑体）：苹方 / 微软雅黑 / Noto Sans SC */
+  --font-sans: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC',
+    'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans SC', 'Source Han Sans SC', sans-serif;
+  /* 中文衬线（宋体）：宋体 / 思源宋体 / Georgia */
+  --font-serif: Georgia, 'Times New Roman', 'Songti SC', 'SimSun', 'STSong', 'Noto Serif SC',
+    'Source Han Serif SC', serif;
+  /* 中文手写（楷体）：楷体 / 华文楷体 */
+  --font-kai: 'Kaiti SC', 'STKaiti', 'KaiTi', '楷体', 'Noto Serif SC', 'Source Han Serif SC',
+    serif;
 
   /* 基础底色（不透明兜底） */
   --bg: #eef0f5;
@@ -77,6 +184,30 @@
   --sidebar-w: 214px;
   --sidebar-w-collapsed: 56px;
   --canvas-inset: 12px;
+
+  /* 模态框表面：比普通毛玻璃更实，避免透出底层画布内容 */
+  --modal-bg: rgba(253, 253, 255, 0.965);
+  --modal-foot-bg: rgba(246, 247, 251, 0.98);
+  --modal-blur: saturate(160%) blur(20px);
+  --scrim: rgba(18, 24, 40, 0.44);
+}
+
+/* 界面字体切换：顶栏「字体」下拉设置 <html data-font="...">，无需重新加载。
+   hand 是默认值（:root 已定义），其余选项通过 data-font 覆盖 --font。 */
+:root[data-font='system'] {
+  --font: var(--font-system);
+}
+
+:root[data-font='sans'] {
+  --font: var(--font-sans);
+}
+
+:root[data-font='serif'] {
+  --font: var(--font-serif);
+}
+
+:root[data-font='kai'] {
+  --font: var(--font-kai);
 }
 
 [data-theme='dark'] {
@@ -112,6 +243,11 @@
   --shadow-1: 0 1px 2px rgba(0, 0, 0, 0.4);
   --shadow-2: 0 6px 20px rgba(0, 0, 0, 0.38);
   --shadow-3: 0 22px 56px rgba(0, 0, 0, 0.55);
+
+  --modal-bg: rgba(31, 32, 40, 0.972);
+  --modal-foot-bg: rgba(25, 26, 33, 0.985);
+  --modal-blur: saturate(160%) blur(20px);
+  --scrim: rgba(0, 0, 0, 0.62);
 }
 
 * {
@@ -327,6 +463,13 @@ body::before {
   transform: scale(0.94);
 }
 
+/* 开关类图标按钮的选中态（文件面板 / 字体切换） */
+.icon-btn.active {
+  border-color: var(--accent-ring);
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
 .icon-btn.sm {
   width: 28px;
   height: 28px;
@@ -416,6 +559,45 @@ body::before {
   color: var(--accent);
 }
 
+/* 字体下拉：菜单项两行（标签 + 说明）+ 选中态对勾 */
+.menu-drop--font {
+  min-width: 262px;
+}
+
+.menu-item--font {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.menu-item__main {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.menu-item__hint {
+  font-size: 11px;
+  color: var(--text-3);
+}
+
+.menu-item--font:hover .menu-item__hint,
+.menu-item--font[data-selected='true'] .menu-item__hint {
+  color: var(--accent);
+}
+
+.menu-item__check {
+  flex: 0 0 auto;
+  color: var(--accent);
+}
+
+.menu-item[data-selected='true'] {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
 .menu-note {
   margin-top: 4px;
   padding: 7px 10px 3px;
@@ -485,6 +667,27 @@ body::before {
   box-shadow: var(--shadow-1);
 }
 
+/**
+ * 收起态：只留图标。
+ * 侧边栏收起（或视口过窄自动收窄）时，引擎名/描述与右侧状态点一并隐藏，
+ * 状态信息改由按钮 title 提示承载，避免出现「图标 + 悬空状态点」的错位布局。
+ */
+.sidebar.collapsed .side-text,
+.sidebar.compact .side-text,
+.sidebar.collapsed .side-dot,
+.sidebar.compact .side-dot,
+.sidebar.collapsed .file-panel,
+.sidebar.compact .file-panel {
+  display: none;
+}
+
+.sidebar.collapsed .side-item,
+.sidebar.compact .side-item {
+  justify-content: center;
+  gap: 0;
+  padding: 9px 0;
+}
+
 .side-icon {
   display: grid;
   place-items: center;
@@ -550,6 +753,222 @@ body::before {
   50% {
     opacity: 0.35;
   }
+}
+
+/* ================= 侧边栏：本地文件目录树 ================= */
+.file-panel {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  flex: 1 1 auto;
+  margin-top: 2px;
+  padding-top: 8px;
+  border-top: 1px solid var(--hairline);
+}
+
+.file-panel__head {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 0 4px 6px 10px;
+}
+
+.file-panel__title {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--text-3);
+  text-transform: uppercase;
+}
+
+.file-panel__ops {
+  display: flex;
+  align-items: center;
+  gap: 1px;
+}
+
+.file-mini-btn {
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border: none;
+  border-radius: var(--r-xs);
+  background: transparent;
+  color: var(--text-3);
+  cursor: pointer;
+  transition: background 0.16s ease, color 0.16s ease;
+}
+
+.file-mini-btn:hover {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.file-panel__list {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  padding: 0 2px;
+}
+
+.file-group {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  width: 100%;
+  padding: 5px 6px;
+  border: none;
+  border-radius: var(--r-xs);
+  background: transparent;
+  color: var(--text-3);
+  font-family: var(--font);
+  font-size: 11.5px;
+  text-align: left;
+  cursor: pointer;
+  transition: color 0.16s ease;
+}
+
+.file-group:hover {
+  color: var(--text-2);
+}
+
+.file-group__chevron {
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  transition: transform 0.16s ease;
+}
+
+.file-group__chevron.open {
+  transform: rotate(90deg);
+}
+
+.file-group__name {
+  flex: 1 1 auto;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.file-group__count {
+  flex: 0 0 auto;
+  font-size: 10.5px;
+  opacity: 0.75;
+}
+
+.file-row {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  width: 100%;
+  padding: 5px 6px 5px 20px;
+  border: 1px solid transparent;
+  border-radius: var(--r-xs);
+  background: transparent;
+  color: var(--text-2);
+  font-family: var(--font);
+  font-size: 12.5px;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.16s ease, color 0.16s ease;
+}
+
+.file-row:hover {
+  background: var(--accent-soft);
+  color: var(--text);
+}
+
+.file-row.active {
+  background: var(--accent-soft);
+  border-color: var(--accent-ring);
+  color: var(--accent);
+  font-weight: 500;
+}
+
+.file-row__name {
+  flex: 1 1 auto;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.file-row__input {
+  flex: 1 1 auto;
+  min-width: 0;
+  padding: 1px 4px;
+  border: 1px solid var(--accent-ring);
+  border-radius: 5px;
+  background: var(--canvas);
+  color: var(--text);
+  font-family: var(--font);
+  font-size: 12.5px;
+  outline: none;
+}
+
+.file-row__ops {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  flex: 0 0 auto;
+  opacity: 0;
+  transition: opacity 0.14s ease;
+}
+
+.file-row:hover .file-row__ops,
+.file-row:focus-within .file-row__ops {
+  opacity: 1;
+}
+
+.file-row__confirm {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex: 0 0 auto;
+  font-size: 11px;
+  color: var(--danger);
+}
+
+.file-row__confirm button {
+  border: none;
+  border-radius: 5px;
+  padding: 1px 5px;
+  background: var(--danger-soft);
+  color: var(--danger);
+  font-family: var(--font);
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.file-row__confirm button.ghost {
+  background: transparent;
+  color: var(--text-3);
+}
+
+.file-empty {
+  padding: 10px 10px;
+  font-size: 11.5px;
+  line-height: 1.6;
+  color: var(--text-3);
+}
+
+.sidebar-current {
+  margin-top: 4px;
+  padding: 6px 8px 2px;
+  border-top: 1px solid var(--hairline);
+  font-size: 11px;
+  color: var(--text-3);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* ================= 画布工具条 ================= */
@@ -695,6 +1114,14 @@ body::before {
   background: var(--canvas);
   border: 1px solid var(--hairline);
   box-shadow: var(--shadow-2);
+}
+
+/* 非当前引擎（data-active="false"）时，Excalidraw 仍保持挂载（仅 visibility:hidden）。
+   但它左下角自带的「缩小/放大」操作条会串到 draw.io / 思维导图视图上，
+   这里在非活动状态下强制隐藏该面板，回到 Excalidraw 时再恢复。
+   缩放操作统一走顶栏工具条（CanvasBar）的 zoomIn / zoomOut / zoomFit。 */
+.engine-pane[data-active='false'] .excalidraw .zoom-actions {
+  display: none !important;
 }
 
 /* ================= 引擎加载 / 占位 ================= */
@@ -1097,10 +1524,6 @@ body::before {
   animation: fade-in 0.18s ease;
 }
 
-[data-theme='dark'] .modal-mask {
-  --scrim: rgba(0, 0, 0, 0.48);
-}
-
 @keyframes fade-in {
   from {
     opacity: 0;
@@ -1117,9 +1540,10 @@ body::before {
   flex-direction: column;
   border: 1px solid var(--glass-brd);
   border-radius: var(--r-xl);
-  background: var(--glass-2);
-  backdrop-filter: var(--blur);
-  -webkit-backdrop-filter: var(--blur);
+  /* 弹窗用专有变量：比普通毛玻璃面板实得多，不会透出底层画布的节点颜色 */
+  background: var(--modal-bg);
+  backdrop-filter: var(--modal-blur);
+  -webkit-backdrop-filter: var(--modal-blur);
   box-shadow: var(--shadow-3);
   overflow: hidden;
   animation: modal-in 0.22s cubic-bezier(0.2, 0.9, 0.3, 1);
@@ -1165,7 +1589,7 @@ body::before {
   gap: 8px;
   padding: 13px 18px;
   border-top: 1px solid var(--hairline);
-  background: var(--glass-3);
+  background: var(--modal-foot-bg);
 }
 
 /* ================= 表单 ================= */
@@ -1477,8 +1901,16 @@ kbd {
     width: var(--sidebar-w-collapsed);
   }
 
-  .sidebar .side-text {
+  .sidebar .side-text,
+  .sidebar .side-dot,
+  .sidebar .file-panel {
     display: none;
+  }
+
+  .sidebar .side-item {
+    justify-content: center;
+    gap: 0;
+    padding: 9px 0;
   }
 }
 

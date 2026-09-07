@@ -17,6 +17,7 @@ import type { ExcalidrawElement } from '@excalidraw/excalidraw/element/types';
 import '@excalidraw/excalidraw/index.css';
 import { useAppStore } from '../../store/useAppStore';
 import { storage, STORAGE_KEYS } from '../../services/storage';
+import { files as fileService, filesReady } from '../../services/files';
 import { downloadBlob, downloadText, stampName } from '../../utils/download';
 import type { EngineAdapter, ExportFormat, ImportFormat, ThemeMode } from '../../types';
 
@@ -110,11 +111,26 @@ export default function ExcalidrawView() {
 
   const [initialData, setInitialData] = useState<ExcalidrawInitialDataState | null>(null);
 
-  // 读取本地存档后再挂载画布，避免 initialData 竞态
+  // 读取当前活动文件后再挂载画布，避免 initialData 竞态
   useEffect(() => {
     let cancelled = false;
     setEngineStatus('excalidraw', 'loading');
-    void storage.get<SavedExcalidraw>(STORAGE_KEYS.EXCALIDRAW).then((saved) => {
+    void (async () => {
+      const { active } = await filesReady();
+      const id = active.excalidraw ?? useAppStore.getState().activeFileId.excalidraw;
+      let saved: SavedExcalidraw | null = null;
+      if (id) {
+        const raw = await fileService.read(id);
+        if (raw) {
+          try {
+            saved = JSON.parse(raw) as SavedExcalidraw;
+          } catch {
+            saved = null;
+          }
+        }
+      }
+      // 老版本单键存档兜底
+      if (!saved) saved = await storage.get<SavedExcalidraw>(STORAGE_KEYS.EXCALIDRAW);
       if (cancelled) return;
       const next: ExcalidrawInitialDataState = saved
         ? {
@@ -129,7 +145,7 @@ export default function ExcalidrawView() {
       themeBgRef.current =
         (next.appState?.viewBackgroundColor as string | undefined) ?? THEME_BG[theme];
       setInitialData(next);
-    });
+    })();
     return () => {
       cancelled = true;
     };
@@ -147,11 +163,20 @@ export default function ExcalidrawView() {
     }
     if (!dataRef.current) return;
     const { elements, appState, files } = dataRef.current;
-    void storage.set(STORAGE_KEYS.EXCALIDRAW, {
+    const saved: SavedExcalidraw = {
       elements,
       appState: trimAppState(appState),
       files: pickUsedFiles(elements, files),
-    });
+    };
+    // 优先写进「本地文件目录树」的当前活动文件；没有活动文件时退回单键存档
+    const id = useAppStore.getState().activeFileId.excalidraw;
+    if (id) {
+      void fileService.write(id, JSON.stringify(saved)).then(() =>
+        useAppStore.getState().refreshFiles(),
+      );
+    } else {
+      void storage.set(STORAGE_KEYS.EXCALIDRAW, saved);
+    }
     markSaved('excalidraw');
   }, [markSaved]);
 
@@ -202,6 +227,46 @@ export default function ExcalidrawView() {
   useEffect(() => {
     const adapter: EngineAdapter = {
       save: () => {
+        flushSave();
+      },
+      getContent: () => {
+        const d = dataRef.current;
+        if (!d) return null;
+        return JSON.stringify({
+          elements: d.elements,
+          appState: trimAppState(d.appState),
+          files: pickUsedFiles(d.elements, d.files),
+        });
+      },
+      loadContent: async (content: string) => {
+        const api = apiRef.current;
+        if (!api) throw new Error('画布尚未就绪，请稍后重试');
+        const fallbackBg = THEME_BG[useAppStore.getState().theme];
+        let scene: ImportedScene | null = null;
+        if (content && content.trim()) {
+          try {
+            scene = JSON.parse(content) as ImportedScene;
+          } catch {
+            scene = null;
+          }
+        }
+        if (scene && Array.isArray(scene.elements)) {
+          const restored = restore(scene, api.getAppState(), null);
+          const fileList = Object.values(restored.files);
+          if (fileList.length) api.addFiles(fileList);
+          api.updateScene({
+            elements: restored.elements,
+            appState: { viewBackgroundColor: restored.appState.viewBackgroundColor ?? fallbackBg },
+            captureUpdate: CaptureUpdateAction.IMMEDIATELY,
+          });
+        } else {
+          // 空内容 = 新建文件，回到空白画布
+          api.updateScene({
+            elements: [],
+            appState: { viewBackgroundColor: fallbackBg },
+            captureUpdate: CaptureUpdateAction.IMMEDIATELY,
+          });
+        }
         flushSave();
       },
       getScale: () => apiRef.current?.getAppState().zoom?.value ?? null,

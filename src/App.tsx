@@ -41,9 +41,11 @@ function EngineLoading({ engine }: { engine: EngineId }) {
 export default function App() {
   const activeEngine = useAppStore((s) => s.activeEngine);
   const theme = useAppStore((s) => s.theme);
+  const uiFont = useAppStore((s) => s.settings.uiFont ?? 'hand');
   const activeDialog = useAppStore((s) => s.activeDialog);
   const refreshUsage = useAppStore((s) => s.refreshUsage);
   const setEngineStatus = useAppStore((s) => s.setEngineStatus);
+  const initFiles = useAppStore((s) => s.initFiles);
   // 首次访问的引擎才挂载，之后保持挂载以保留各引擎状态
   const [visited, setVisited] = useState<EngineId[]>([]);
 
@@ -52,6 +54,18 @@ export default function App() {
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
   }, [theme]);
+
+  // 界面字体：hand = excalifont 手写体（默认，拉丁字符），system/sans/serif/kai 分别对应
+  // 系统 UI / 黑体 / 宋体 / 楷体（中文友好）。通过 <html data-font> 切换，
+  // global.css 里 :root[data-font='...'] 覆盖 --font。
+  useEffect(() => {
+    document.documentElement.setAttribute('data-font', uiFont);
+  }, [uiFont]);
+
+  // 本地文件目录树：读取索引，必要时把旧的单键存档迁移为默认文件
+  useEffect(() => {
+    void initFiles().then(() => void refreshUsage());
+  }, [initFiles, refreshUsage]);
 
   // file:// 下宿主来源为 null，本地存储与嵌入引擎都会失效，启动时明确告知
   useEffect(() => {
@@ -100,6 +114,7 @@ export default function App() {
                 <div
                   key={id}
                   className="engine-pane"
+                  data-active={activeEngine === id ? 'true' : 'false'}
                   style={{ visibility: activeEngine === id ? 'visible' : 'hidden' }}
                 >
                   <Suspense fallback={<EngineLoading engine={id} />}>

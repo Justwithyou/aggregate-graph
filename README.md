@@ -2,7 +2,7 @@
 
 **一个窗口，三种画布 —— 聚合 draw.io / Excalidraw / 思维导图的本地绘图工具**
 
-![Version](https://img.shields.io/badge/version-0.3.5-blue)
+![Version](https://img.shields.io/badge/version-0.4.0-blue)
 ![CI](https://github.com/Justwithyou/aggregate-graph/actions/workflows/ci.yml/badge.svg)
 ![Issues](https://img.shields.io/github/issues/Justwithyou/aggregate-graph)
 ![PRs](https://img.shields.io/github/issues-pr/Justwithyou/aggregate-graph)
@@ -66,6 +66,7 @@
 - 🌗 **亮 / 暗主题**，毛玻璃（glassmorphism）视觉风格
 - ⌨️ **全局快捷键**（见下表）
 - 📊 **状态栏**：引擎加载状态、最近保存时间、本地存储占用
+- 📂 **本地文件目录树**：三大引擎多文档管理（新建 / 打开 / 重命名 / 删除），内容存 IndexedDB、索引存 localStorage，历史内容一键打开
 - 🧰 **数据管理**：一键导出/导入全部数据的 JSON 快照，支持迁移与回退；存储配额可视化
 - 🛡️ **健壮存储**：小数据走 localStorage 同步读写，大对象（>256KB）自动转存 IndexedDB，配额超限自动提示
 
@@ -302,8 +303,8 @@ drawhub/
 **近期待办（v0.4–v0.5）**
 
 - [x] 思维导图显示优化：关闭 `view.fit()`、强制 SVG 字体覆盖、CSS 兜底
+- [x] 多文档 / 文件树（本地文件目录树，见上方特性）
 - [ ] 思维导图引擎替换 → mind-elixir-core（详见 [替换方案](docs/思维导图引擎替换方案.md)）
-- [ ] 多文档 / 文件树
 - [ ] 全局搜索（跨引擎 / 跨文档）
 - [ ] 桌面端自动更新（Tauri updater）
 - [ ] 导出 ZIP 打包（多文档一键导出）

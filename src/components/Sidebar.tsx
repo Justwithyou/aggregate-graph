@@ -3,6 +3,8 @@ import { Workflow, PenTool, Network, Settings, Info } from 'lucide-react';
 import type { EngineId } from '../types';
 import { useAppStore } from '../store/useAppStore';
 import { ENGINE_META, ENGINE_ORDER } from '../constants';
+import { useMediaQuery, NARROW_QUERY } from '../hooks/useMediaQuery';
+import FileTree from './FileTree';
 
 const ICONS: Record<EngineId, ReactNode> = {
   drawio: <Workflow size={17} />,
@@ -30,42 +32,59 @@ export default function Sidebar() {
   const engineStatus = useAppStore((s) => s.engineStatus);
   const collapsed = useAppStore((s) => s.sidebarCollapsed);
   const setDialog = useAppStore((s) => s.setDialog);
+  const filesPanelOpen = useAppStore((s) => s.settings.filesPanelOpen);
+  const files = useAppStore((s) => s.files);
+  const activeFileId = useAppStore((s) => s.activeFileId);
+
+  // 浏览器放大 / 窗口变窄时 CSS 视口会缩小，此时与手动收起一样只显示图标
+  const narrow = useMediaQuery(NARROW_QUERY);
+  const iconOnly = collapsed || narrow;
+
+  const currentFileName = files.find((f) => f.id === activeFileId[activeEngine])?.name;
 
   return (
-    <aside className={`sidebar${collapsed ? ' collapsed' : ''}`}>
+    <aside
+      className={`sidebar${collapsed ? ' collapsed' : ''}${narrow ? ' compact' : ''}`}
+      data-icon-only={iconOnly ? 'true' : 'false'}
+    >
       <nav className="sidebar-list">
         {ENGINE_ORDER.map((id) => {
           const status = engineStatus[id];
+          const statusText = STATUS_TEXT[status] ?? status;
           return (
             <button
               key={id}
               className={`side-item${activeEngine === id ? ' active' : ''}`}
               onClick={() => setEngine(id)}
-              title={collapsed ? `${ENGINE_META[id].label} (${HOTKEYS[id]})` : HOTKEYS[id]}
+              title={
+                iconOnly
+                  ? `${ENGINE_META[id].label} · ${statusText} (${HOTKEYS[id]})`
+                  : `${ENGINE_META[id].label} · ${statusText} · ${HOTKEYS[id]}`
+              }
             >
               <span className="side-icon">{ICONS[id]}</span>
-              {!collapsed && (
+              {!iconOnly && (
                 <span className="side-text">
                   <span className="side-label">{ENGINE_META[id].label}</span>
                   <span className="side-desc">{ENGINE_META[id].desc}</span>
                 </span>
               )}
-              <span className={`side-dot ${status}`} title={STATUS_TEXT[status] ?? status} />
+              {!iconOnly && (
+                <span className={`side-dot ${status}`} title={statusText} />
+              )}
             </button>
           );
         })}
       </nav>
 
+      {!iconOnly && filesPanelOpen && <FileTree />}
+
       <div className="sidebar-foot">
-        <button
-          className={`side-item${collapsed ? '' : ''}`}
-          onClick={() => setDialog('settings')}
-          title="设置"
-        >
+        <button className="side-item" onClick={() => setDialog('settings')} title="设置">
           <span className="side-icon">
             <Settings size={17} />
           </span>
-          {!collapsed && (
+          {!iconOnly && (
             <span className="side-text">
               <span className="side-label">设置</span>
             </span>
@@ -75,12 +94,17 @@ export default function Sidebar() {
           <span className="side-icon">
             <Info size={17} />
           </span>
-          {!collapsed && (
+          {!iconOnly && (
             <span className="side-text">
               <span className="side-label">关于</span>
             </span>
           )}
         </button>
+        {!iconOnly && currentFileName && (
+          <div className="sidebar-current" title={`当前文件：${currentFileName}`}>
+            {currentFileName}
+          </div>
+        )}
       </div>
     </aside>
   );

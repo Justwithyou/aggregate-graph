@@ -5,6 +5,7 @@ import { transformMarkdownTo } from 'simple-mind-map/src/parse/markdownTo.js';
 import xmindParser from 'simple-mind-map/src/parse/xmind.js';
 import { useAppStore } from '../../store/useAppStore';
 import { storage, STORAGE_KEYS } from '../../services/storage';
+import { files as fileService, filesReady } from '../../services/files';
 import type { EngineAdapter, ExportFormat, ImportFormat, ThemeMode } from '../../types';
 
 /**
@@ -13,7 +14,7 @@ import type { EngineAdapter, ExportFormat, ImportFormat, ThemeMode } from '../..
  * 让节点文字与 DrawHub 全局字体保持一致。
  */
 const GLOBAL_FONT_FAMILY =
-  "'Assistant', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif";
+  "excalifont, 'excalifont Fallback', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif";
 
 /** simple-mind-map 内置 default 主题仅适配亮色，深色通过 themeConfig 覆盖 */
 const THEME_CONFIG: Record<ThemeMode, Record<string, any>> = {
@@ -38,6 +39,18 @@ const THEME_CONFIG: Record<ThemeMode, Record<string, any>> = {
 };
 
 const DEFAULT_DATA = { data: { text: '中心主题' }, children: [] };
+
+/** 把当前导图数据写入「本地文件目录树」的当前活动文件；无活动文件时退回单键存档 */
+function writeMindmap(data: unknown): void {
+  const id = useAppStore.getState().activeFileId.mindmap;
+  if (id) {
+    void fileService.write(id, JSON.stringify(data)).then(() =>
+      useAppStore.getState().refreshFiles(),
+    );
+  } else {
+    void storage.set(STORAGE_KEYS.MINDMAP, data);
+  }
+}
 
 const LAYOUT_OPTIONS = [
   { value: 'logicalStructure', label: '逻辑结构图' },
@@ -75,14 +88,30 @@ export default function MindMapView() {
 
     setEngineStatus('mindmap', 'loading');
 
-    void storage.get<any>(STORAGE_KEYS.MINDMAP).then((saved) => {
+    void (async () => {
+      // 引擎挂载早于 App 的 effect，用 filesReady() 确保索引/迁移完成
+      const { active } = await filesReady();
+      const activeId = active.mindmap ?? useAppStore.getState().activeFileId.mindmap;
+      let saved: any = null;
+      if (activeId) {
+        const raw = await fileService.read(activeId);
+        if (raw) {
+          try {
+            saved = JSON.parse(raw);
+          } catch {
+            saved = null;
+          }
+        }
+      }
+      // 老版本单键存档兜底
+      if (!saved) saved = await storage.get<any>(STORAGE_KEYS.MINDMAP);
       if (cancelled || !containerRef.current) return;
 
       const persist = () => {
         if (saveTimerRef.current) window.clearTimeout(saveTimerRef.current);
         saveTimerRef.current = window.setTimeout(() => {
           if (mindMapRef.current) {
-            void storage.set(STORAGE_KEYS.MINDMAP, mindMapRef.current.getData(false));
+            writeMindmap(mindMapRef.current.getData(false));
             markSaved('mindmap');
           }
         }, autosaveDelay);
@@ -144,13 +173,13 @@ export default function MindMapView() {
       setEngineStatus('mindmap', 'ready');
       syncScale();
       setReady(true);
-    });
+    })();
 
     return () => {
       cancelled = true;
       if (saveTimerRef.current) window.clearTimeout(saveTimerRef.current);
       if (mindMapRef.current) {
-        void storage.set(STORAGE_KEYS.MINDMAP, mindMapRef.current.getData(false));
+        writeMindmap(mindMapRef.current.getData(false));
       }
       instance?.destroy();
       mindMapRef.current = null;
@@ -181,7 +210,7 @@ export default function MindMapView() {
     const mm = mindMapRef.current;
     if (!mm) return;
     if (saveTimerRef.current) window.clearTimeout(saveTimerRef.current);
-    void storage.set(STORAGE_KEYS.MINDMAP, mm.getData(false));
+    writeMindmap(mm.getData(false));
     markSaved('mindmap');
   }, [markSaved]);
 
@@ -189,6 +218,37 @@ export default function MindMapView() {
   useEffect(() => {
     const adapter: EngineAdapter = {
       save: flushSave,
+      getContent: () => {
+        const mm = mindMapRef.current;
+        if (!mm) return null;
+        return JSON.stringify(mm.getData(false));
+      },
+      loadContent: async (content: string) => {
+        const mm = mindMapRef.current;
+        if (!mm) throw new Error('思维导图尚未就绪，请稍后重试');
+        let data: any = DEFAULT_DATA;
+        if (content && content.trim()) {
+          try {
+            data = JSON.parse(content);
+          } catch {
+            throw new Error('文件内容不是有效的思维导图 JSON');
+          }
+        }
+        mm.setData(data);
+        // 不用 fit()：载入后保持 1x + 居中，由用户自行滚轮缩放
+        requestAnimationFrame(() => {
+          try {
+            mm.view.setScale?.(1);
+            mm.view.reset?.();
+          } catch {
+            /* ignore */
+          }
+          containerRef.current
+            ?.querySelectorAll('svg text')
+            .forEach((t) => t.setAttribute('font-family', GLOBAL_FONT_FAMILY));
+        });
+        flushSave();
+      },
       getScale: () => mindMapRef.current?.view.getTransformData().state.scale ?? null,
       zoomIn: () => mindMapRef.current?.view.enlarge(),
       zoomOut: () => mindMapRef.current?.view.narrow(),

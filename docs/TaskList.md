@@ -39,6 +39,13 @@
 | 18 | 2026-09-07 | README 徽章（CI / Issues / PRs / Last commit）+ Issue 模板 + PR 模板 + CHANGELOG | ✅ 已完成 | 2026-09-07 | v0.3.4（`.github/ISSUE_TEMPLATE/`、`.github/PULL_REQUEST_TEMPLATE.md`、`CHANGELOG.md`） |
 | 19 | 2026-09-07 | README 误含本机局域网 IP（真实 IP 公开库泄露，占位符替换 + 历史改写） | ✅ 已完成 | 2026-09-07 | 占位符 `192.168.x.x` 替换 + `filter-branch` 改写全部历史 SHA + force push |
 | 20 | 2026-09-07 | README 截图重制（修复 01/02/03 三张图实际是同一张 draw.io 截图的 bug） | ✅ 已完成 | 2026-09-07 | 改点击侧边栏 + 校验 `.side-item.active`，四图 MD5 各不相同、亮度 244~251 / 29.7 |
+| 21 | 2026-09-07 | 侧边栏收起/窄视口时引擎状态文字未收齐，应仅显示图标 | ✅ 已完成 | 2026-09-07 | `useMediaQuery` + `.sidebar[data-icon-only]`，窄视口/手动收起均只渲染图标 |
+| 22 | 2026-09-07 | 全局字体设为 excalifont + excalifont Fallback，并提供可切换字体按钮 | ✅ 已完成 | 2026-09-07 | `--font` 切 excalifont（7 个 unicode-range 分片）+ `<html data-font>` 切换 + 顶栏字体按钮 |
+| 23 | 2026-09-07 | 设置/关于弹窗透明度不足，能透出底层节点颜色 | ✅ 已完成 | 2026-09-07 | `--modal-bg` 0.965 + `--scrim` 0.44（原 0.28） |
+| 24 | 2026-09-07 | 增加本地文件目录树（IndexedDB），历史保存内容可打开/保存 | ✅ 已完成 | 2026-09-07 | `files.ts` + `FileTree.tsx` + 三引擎 `getContent/loadContent` + 老数据迁移 |
+| 25 | 2026-09-07 | 文件目录树为新功能：写入 README 徽章（同步特性区）并更新版本号 | ✅ 已完成 | 2026-09-07 | v0.4.0（版本徽章 0.3.5→0.4.0 + README 本地文件目录树特性 + CHANGELOG） |
+| 26 | 2026-09-07 | Excalidraw 左下角缩放操作条串到 draw.io / 思维导图视图，切换引擎时需隐藏 | ✅ 已完成 | 2026-09-07 | v0.4.0（`.engine-pane[data-active='false'] .excalidraw .zoom-actions{display:none}`） |
+| 27 | 2026-09-07 | excalifont 仅覆盖拉丁字符，切换字体时增加多种中文友好选项 | ✅ 已完成 | 2026-09-07 | v0.4.0（`UiFont` 扩为 hand/system/sans/serif/kai + 顶栏字体下拉 + 设置面板） |
 
 ---
 

@@ -1,4 +1,4 @@
-import type { EngineId, ExportFormat, ImportFormat } from './types';
+import type { EngineId, ExportFormat, ImportFormat, UiFont } from './types';
 
 /** draw.io 官方嵌入地址（需联网） */
 export const DEFAULT_DRAWIO_URL = 'https://embed.diagrams.net/';
@@ -82,4 +82,31 @@ export const DEFAULT_SETTINGS = {
   drawioMath: false,
   autosaveDelay: 600,
   sidebarCollapsed: false,
+  /** 界面字体：excalifont 手写体（hand）默认 */
+  uiFont: 'hand' as UiFont,
+  /** 侧边栏本地文件目录树 */
+  filesPanelOpen: true,
+};
+
+/** 界面字体选项：顶栏「字体」下拉与设置面板共用 */
+export const FONT_OPTIONS: { value: UiFont; label: string; hint: string }[] = [
+  { value: 'hand', label: 'excalifont 手写体', hint: '拉丁字符手写风，中文回退系统字体' },
+  { value: 'system', label: '系统默认 / Assistant', hint: '极简 UI 字体' },
+  { value: 'sans', label: '黑体（中文无衬线）', hint: '苹方 / 微软雅黑 / Noto Sans SC' },
+  { value: 'serif', label: '宋体（中文衬线）', hint: '宋体 / 思源宋体 / Georgia' },
+  { value: 'kai', label: '楷体（中文手写）', hint: '楷体 / 华文楷体' },
+];
+
+/** 每个引擎在文件树里的内容格式 */
+export const ENGINE_FILE_FORMAT: Record<EngineId, 'xml' | 'json'> = {
+  drawio: 'xml',
+  excalidraw: 'json',
+  mindmap: 'json',
+};
+
+/** 每个引擎新建文件时的默认命名前缀 */
+export const ENGINE_FILE_PREFIX: Record<EngineId, string> = {
+  drawio: '未命名图表',
+  excalidraw: '未命名白板',
+  mindmap: '未命名导图',
 };

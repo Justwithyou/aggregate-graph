@@ -3,7 +3,7 @@ import { Download, Upload, Trash2, RotateCcw } from 'lucide-react';
 import Modal from '../Modal';
 import { useAppStore } from '../../store/useAppStore';
 import { storage, type StorageSnapshot } from '../../services/storage';
-import { DEFAULT_DRAWIO_URL } from '../../constants';
+import { DEFAULT_DRAWIO_URL, FONT_OPTIONS } from '../../constants';
 import { downloadText, formatBytes, stampName } from '../../utils/download';
 
 const AUTOSAVE_OPTIONS = [
@@ -80,6 +80,21 @@ export default function SettingsDialog() {
             onChange={(e) => updateSettings({ autosaveDelay: Number(e.target.value) })}
           >
             {AUTOSAVE_OPTIONS.map((o) => (
+              <option key={o.value} value={o.value}>
+                {o.label}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label className="form-row">
+          <span>界面字体</span>
+          <select
+            value={settings.uiFont ?? 'hand'}
+            onChange={(e) =>
+              updateSettings({ uiFont: e.target.value as typeof settings.uiFont })
+            }
+          >
+            {FONT_OPTIONS.map((o) => (
               <option key={o.value} value={o.value}>
                 {o.label}
               </option>

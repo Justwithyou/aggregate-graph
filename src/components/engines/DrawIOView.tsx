@@ -10,6 +10,7 @@ import {
 } from 'lucide-react';
 import { useAppStore } from '../../store/useAppStore';
 import { storage, STORAGE_KEYS } from '../../services/storage';
+import { files as fileService, filesReady } from '../../services/files';
 import { DRAWIO_EMBED_PARAMS, ENGINE_META } from '../../constants';
 import { downloadDataUrl, downloadText, stampName } from '../../utils/download';
 import type { EngineAdapter, ExportFormat, ImportFormat } from '../../types';
@@ -191,7 +192,14 @@ export default function DrawIOView() {
       window.clearTimeout(saveTimerRef.current);
       saveTimerRef.current = null;
     }
-    void storage.setRaw(STORAGE_KEYS.DRAWIO_XML, xmlRef.current);
+    const xml = xmlRef.current;
+    // 优先写进「本地文件目录树」的当前活动文件；没有活动文件时退回单键存档
+    const id = useAppStore.getState().activeFileId.drawio;
+    if (id) {
+      void fileService.write(id, xml).then(() => useAppStore.getState().refreshFiles());
+    } else {
+      void storage.setRaw(STORAGE_KEYS.DRAWIO_XML, xml);
+    }
     markSaved('drawio');
   }, [markSaved]);
 
@@ -234,17 +242,23 @@ export default function DrawIOView() {
     [post],
   );
 
-  // 启动：先读取本地存档，再挂载 iframe，确保 init 时即有数据可用
+  // 启动：先读取当前活动文件的内容，再挂载 iframe，确保 init 时即有数据可用
   useEffect(() => {
     let cancelled = false;
     setEngineStatus('drawio', 'loading');
-    void storage.getRaw(STORAGE_KEYS.DRAWIO_XML).then((xml) => {
+    void (async () => {
+      // 引擎挂载早于 App 的 effect，用 filesReady() 确保索引与迁移已完成
+      const { active } = await filesReady();
+      const id = active.drawio ?? useAppStore.getState().activeFileId.drawio;
+      let xml = id ? await fileService.read(id) : null;
+      // 老版本单键存档兜底
+      if (xml === null) xml = await storage.getRaw(STORAGE_KEYS.DRAWIO_XML);
       if (cancelled) return;
       pendingXmlRef.current = xml || DEFAULT_DRAWIO_XML;
       xmlRef.current = pendingXmlRef.current;
       bootedRef.current = true;
       setBooted(true);
-    });
+    })();
     return () => {
       cancelled = true;
     };
@@ -357,6 +371,23 @@ export default function DrawIOView() {
         if (xml) xmlRef.current = xml;
         flushPersist();
       },
+      getContent: async () => {
+        if (readyRef.current) {
+          const xml = await requestExport('xml');
+          if (xml) return xml;
+        }
+        return xmlRef.current;
+      },
+      loadContent: async (content: string) => {
+        // 空内容 = 新建文件，回到自带默认画布
+        const xml = content && content.trim() ? content : DEFAULT_DRAWIO_XML;
+        xmlRef.current = xml;
+        pendingXmlRef.current = xml;
+        if (readyRef.current) {
+          post({ action: 'load', xml, autosave: 1 });
+        }
+        flushPersist();
+      },
       exportAs: async (format) => {
         const target = EXPORT_FORMAT_MAP[format];
         if (!target) {
@@ -408,7 +439,10 @@ export default function DrawIOView() {
     () => () => {
       if (saveTimerRef.current) window.clearTimeout(saveTimerRef.current);
       saveTimerRef.current = null;
-      void storage.setRaw(STORAGE_KEYS.DRAWIO_XML, xmlRef.current);
+      const id = useAppStore.getState().activeFileId.drawio;
+      const xml = xmlRef.current;
+      if (id) void fileService.write(id, xml);
+      else void storage.setRaw(STORAGE_KEYS.DRAWIO_XML, xml);
     },
     [],
   );
