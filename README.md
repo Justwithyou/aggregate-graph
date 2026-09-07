@@ -106,7 +106,7 @@
 ```bash
 npm run dev
 # ➜  Local:   http://localhost:20001/
-# ➜  Network: http://192.168.x.x:20001/   ← 用这个地址给同事 / 手机访问
+# ➜  Network: http://192.168.x.x:20001/   ← x.x 换成本机局域网 IP，给同事 / 手机访问
 ```
 
 若其他设备访问不通，通常是 Windows 防火墙拦截，放行对应端口即可：

@@ -334,7 +334,7 @@ Ctrl+S  → saveActive() → adapters.mindmap.save() → persist() + markSaved()
 | 生产预览 | 20002 | `vite.config.ts` → `preview.port` | `0.0.0.0` |
 | draw.io 自托管（可选） | 20003 | 仅离线/内网部署时用到 | 由 draw.io 决定 |
 
-**监听地址说明**：`server.host` 与 `preview.host` 均设为 `true`（监听 `0.0.0.0`）。Vite 默认值只绑定 `localhost`，而 Node 17+ 会把 `localhost` 优先解析为 IPv6 回环 `::1`，表现为「`localhost` 能打开、用本机局域网 IP 访问不了」。设为 `true` 后启动时会额外打印 Network 地址（如 `http://192.168.x.x:20001/`），可供局域网内其他设备访问。
+**监听地址说明**：`server.host` 与 `preview.host` 均设为 `true`（监听 `0.0.0.0`）。Vite 默认值只绑定 `localhost`，而 Node 17+ 会把 `localhost` 优先解析为 IPv6 回环 `::1`，表现为「`localhost` 能打开、用本机局域网 IP 访问不了」。设为 `true` 后启动时会额外打印 Network 地址（如 `http://192.168.x.x:20001/`，`x.x` 为本机局域网 IP），可供局域网内其他设备访问。
 
 ```bash
 npm install        # 安装依赖
