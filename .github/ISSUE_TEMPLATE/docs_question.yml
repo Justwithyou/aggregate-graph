@@ -1,0 +1,19 @@
+name: Docs / Question
+description: 文档不准确 / 使用疑问 / 设计讨论
+labels: ["documentation", "question"]
+body:
+  - type: textarea
+    id: question
+    attributes:
+      label: 你的问题 / 文档疑问
+    validations:
+      required: true
+  - type: textarea
+    id: tried
+    attributes:
+      label: 你尝试过的
+      description: 你已经看了哪些文档 / 试过哪些命令？
+  - type: textarea
+    id: env
+    attributes:
+      label: 浏览器 / 操作系统 / 版本

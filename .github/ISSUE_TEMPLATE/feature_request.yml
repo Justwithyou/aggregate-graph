@@ -1,0 +1,67 @@
+name: Feature Request
+description: 为 DrawHub 提出新功能想法
+title: "[Feature]: "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        先讲**痛点**（你现在怎么解决、哪里别扭），再讲**设想**（你希望怎么解决）。
+        完整路线图参考 [`docs/未来功能升级.md`](docs/未来功能升级.md)，避免重复提议已经在列表里的项。
+
+  - type: dropdown
+    id: scope
+    attributes:
+      label: 涉及范围
+      options:
+        - 引擎（新引擎 / 引擎能力扩展）
+        - UI / 交互
+        - 数据 / 存储 / 备份
+        - 导入 / 导出格式
+        - 协作 / 分享
+        - 桌面端 / 打包
+        - 文档 / 工具链 / CI
+    validations:
+      required: true
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: 优先级
+      options:
+        - 急需（影响日常使用）
+        - 1 个月内想要
+        - 季度内
+        - 长期待办（v1.0+）
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: 当前痛点
+      description: 你现在解决 X 场景时，DrawHub（或别的工具）的哪个具体环节让你别扭？
+      placeholder: |
+        例：每周例会需要把 draw.io 流程图导成 PNG 发群，但导出 1MB+，手机看糊；想直接在 DrawHub 里生成更小的压缩图。
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: 期望方案
+      description: 你希望 DrawHub 怎么解决？可以描述交互、UI 草图、参考竞品。
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: 替代方案 / 妥协
+      description: 如果完整方案成本太高，有没有轻量替代？
+
+  - type: textarea
+    id: context
+    attributes:
+      label: 补充信息
+      description: 你的使用场景、参考链接、相关竞品截图等。

@@ -1,0 +1,97 @@
+name: Bug Report
+description: 报告 DrawHub 的 Bug
+title: "[Bug]: "
+labels: ["bug", "needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        感谢提交 Bug！请尽可能填写以下信息，**最少填完「复现步骤 / 期望 / 实际」** 三个字段，否则无法定位。
+
+  - type: input
+    id: version
+    attributes:
+      label: DrawHub 版本
+      description: 设置面板右上角可见，或 `package.json` 中的 version。
+      placeholder: "0.3.5"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: engine
+    attributes:
+      label: 受影响的引擎
+      description: Bug 出现在哪个引擎或范围？
+      options:
+        - draw.io
+        - Excalidraw
+        - 思维导图（simple-mind-map）
+        - 全局 UI（顶栏 / 侧边栏 / 快捷键 等）
+        - 存储 / 数据管理
+        - 桌面端（Tauri）
+        - 其他 / 不确定
+    validations:
+      required: true
+
+  - type: input
+    id: env
+    attributes:
+      label: 浏览器 / 操作系统
+      placeholder: "Chrome 130 / Windows 11 / Electron 30"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: runtime
+    attributes:
+      label: 启动方式
+      options:
+        - npm run dev（开发）
+        - npm run preview（生产预览）
+        - npm run tauri dev（桌面开发）
+        - npm run tauri build（桌面打包后）
+        - 直接打开 dist/index.html（file://）
+    validations:
+      required: true
+
+  - type: textarea
+    id: repro
+    attributes:
+      label: 复现步骤
+      description: 一步步列出触发 Bug 的操作，越具体越好。
+      placeholder: |
+        1. 打开 http://localhost:20001
+        2. 切换到思维导图引擎
+        3. 双击根节点编辑文字，输入换行
+        4. 点击画布空白处确认编辑
+        5. 文字消失
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: 期望行为
+      description: 你认为正确的行为是什么？
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: 实际行为
+      description: 实际发生了什么？请粘贴 Console 报错或截图。
+    validations:
+      required: true
+
+  - type: textarea
+    id: impact
+    attributes:
+      label: 影响范围
+      description: 该 Bug 是否阻塞你的正常使用？是否丢失数据？
+
+  - type: textarea
+    id: attachments
+    attributes:
+      label: 截图 / 录屏 / 日志
+      description: 拖拽图片到下方或粘贴 Markdown 图片链接。F12 Console 的红色错误尤其重要。

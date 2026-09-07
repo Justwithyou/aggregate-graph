@@ -2,7 +2,11 @@
 
 **一个窗口，三种画布 —— 聚合 draw.io / Excalidraw / 思维导图的本地绘图工具**
 
-![Version](https://img.shields.io/badge/version-0.3.1-blue)
+![Version](https://img.shields.io/badge/version-0.3.5-blue)
+![CI](https://github.com/Justwithyou/aggregate-graph/actions/workflows/ci.yml/badge.svg)
+![Issues](https://img.shields.io/github/issues/Justwithyou/aggregate-graph)
+![PRs](https://img.shields.io/github/issues-pr/Justwithyou/aggregate-graph)
+![Last commit](https://img.shields.io/github/last-commit/Justwithyou/aggregate-graph)
 ![React](https://img.shields.io/badge/React-19-61dafb?logo=react&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178c6?logo=typescript&logoColor=white)
 ![Vite](https://img.shields.io/badge/Vite-8-646cff?logo=vite&logoColor=white)
@@ -327,6 +331,16 @@ drawhub/
 ```bash
 npm run build   # 通过 tsc 类型检查与构建
 ```
+
+**Issue** 请按类型使用模板（仓库根目录 `.github/ISSUE_TEMPLATE/`）：
+
+- Bug → 「Bug Report」
+- 新功能 → 「Feature Request」（先查 [`docs/未来功能升级.md`](docs/未来功能升级.md) 避免重复）
+- 文档疑问 / 设计讨论 → 「Docs / Question」
+
+**PR** 请使用仓库根目录 `.github/PULL_REQUEST_TEMPLATE.md`，commit message 遵循 [Conventional Commits](https://www.conventionalcommits.org/zh-hans/)（`feat:` / `fix:` / `docs:` / `refactor:` / `chore:` / `perf:`）。
+
+CI 会自动跑 `npm ci && npm run build`，请确保在本地通过后再提 PR。
 
 ## 📄 许可证
 
